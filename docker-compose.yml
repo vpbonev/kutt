@@ -1,0 +1,51 @@
+version: "3"
+
+services:
+  kutt:
+    image: mbition/kutt
+    depends_on:
+      - postgres
+      - redis
+      - kutt-migrate
+    command: ["production-server/server.js"]
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      DB_HOST: postgres
+      DB_NAME: kutt
+      DB_USER: user
+      DB_PASSWORD: pass
+      REDIS_HOST: redis
+
+  kutt-migrate:
+    image: mbition/kutt-migrate
+    depends_on:
+      - postgres
+    env_file:
+      - .env
+    environment:
+      DB_HOST: postgres
+      DB_NAME: kutt
+      DB_USER: user
+      DB_PASSWORD: pass
+      REDIS_HOST: redis
+
+  redis:
+    image: redis:7.0-bullseye
+    volumes:
+      - redis_data:/data
+
+  postgres:
+    image: postgres:15-bullseye
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: kutt
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  redis_data:
+  postgres_data:

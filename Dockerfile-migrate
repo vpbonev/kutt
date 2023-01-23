@@ -1,0 +1,12 @@
+FROM node:18 AS build
+# Setting working directory.
+WORKDIR /usr/src/app
+
+# Installing dependencies
+COPY package*.json ./
+RUN npm install -D
+# Copying source files
+COPY . .
+
+# Migration via knex
+CMD ["npm", "run" ,"migrate"]
